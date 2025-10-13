@@ -11,18 +11,18 @@
         {% endblock %} - {{ site_settings.site_name }}
     </title>
     
-    <meta name="description" content="{% block meta_description %}{{ post.excerpt|default:'Stream and download the latest Nollywood, Hollywood, and Bollywood movies and TV shows on Hypeblog9jaTV. Get movie reviews, trailers, and more.' }}{% endblock %}">
+    <meta name="description" content="{% block meta_description %}{{ post.excerpt|default:'Stream and download the latest Nollywood, Hollywood, and Bollywood movies and TV shows on Jaraflix. Get movie reviews, trailers, and more.' }}{% endblock %}">
 
     {# Open Graph Tags (for Facebook, WhatsApp, LinkedIn) #}
     <meta property="og:locale" content="en_US"/>
-    <meta property="og:site_name" content="Hypeblog9jaTV"/>
-    <meta property="og:title" content="{% block og_title %}{{ post.get_page_title|default:'Watch Latest Movies & TV Shows' }}{% endblock %} - Hypeblog9jaTV">
+    <meta property="og:site_name" content="Jaraflix"/>
+    <meta property="og:title" content="{% block og_title %}{{ post.get_page_title|default:'Watch Latest Movies & TV Shows' }}{% endblock %} - Jaraflix">
     
     {# Use the pre-calculated absolute URL from the view #}
     <meta property="og:url" content="{{ post_absolute_url }}">
     
     <meta property="og:type" content="article">
-    <meta property="og:description" content="{% block og_description %}{{ post.excerpt|default:'Stream and download the latest Nollywood, Hollywood, and Bollywood movies and TV Shows on Hypeblog9jaTV.' }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ post.excerpt|default:'Stream and download the latest Nollywood, Hollywood, and Bollywood movies and TV Shows on Jaraflix.' }}{% endblock %}">
     
     {# Use the pre-calculated absolute URL for thumbnail #}
     <meta property="og:image" content="{{ thumbnail_absolute_url }}">
@@ -42,15 +42,15 @@
 
     {# Twitter Card Tags #}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{% block twitter_title %}{{ post.get_page_title|default:'Watch Latest Movies & TV Shows' }}{% endblock %} - Hypeblog9jaTV">
+    <meta name="twitter:title" content="{% block twitter_title %}{{ post.get_page_title|default:'Watch Latest Movies & TV Shows' }}{% endblock %} - Jaraflix">
     {# Use the pre-calculated absolute URL #}
     <meta name="twitter:url" content="{{ post_absolute_url }}">
-    <meta name="twitter:description" content="{% block twitter_description %}{{ post.excerpt|default:'Stream and download the latest Nollywood, Hollywood, and Bollywood movies and TV Shows on Hypeblog9jaTV.' }}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{{ post.excerpt|default:'Stream and download the latest Nollywood, Hollywood, and Bollywood movies and TV Shows on Jaraflix.' }}{% endblock %}">
     
     {# Use the pre-calculated absolute URL for thumbnail #}
     <meta name="twitter:image" content="{{ thumbnail_absolute_url }}">
     
-    <meta name="twitter:site" content="@Hypeblog9jaTV">
+    <meta name="twitter:site" content="@Jaraflix">
     <meta name="twitter:creator" content="@YourCreatorHandle">
 
     {% if page_obj.has_previous %}
@@ -93,7 +93,7 @@
             --text-secondary: #c9d1d9; /* Secondary/Paragraph text */
             --text-muted: #8b949e; /* Muted/Hint text */
             
-            /* Primary Accent (Green/Teal for Hypeblog9jaTV theme) */
+            /* Primary Accent (Green/Teal for Jaraflix theme) */
             --primary-green: #00d084; 
             --primary-green-dark: #00a86a; 
 
