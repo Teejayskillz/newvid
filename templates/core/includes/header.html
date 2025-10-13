@@ -290,6 +290,9 @@
         <a href="{% url 'category' 'animation' %}" class="btn btn-sm category-btn {% if category_slug == 'animation' %}active{% endif %}">
           <i class="fas fa-pencil-ruler me-1"></i>Animation
         </a>
+        <a href="{% url 'category' 'music' %}" class="btn btn-sm category-btn {% if category_slug == 'music' %}active{% endif %}" atgs="category-music">
+          <i class="fas fa-music me-1"></i>Music
+        </a>
         <a href="{% url 'category' 'news' %}" class="btn btn-sm category-btn {% if category_slug == 'news' %}active{% endif %}">
           <i class="fas fa-newspaper me-1"></i>News
         </a>
