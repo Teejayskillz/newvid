@@ -1,14 +1,16 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>
-    {% block title %}
-        {{ post.get_page_title|default:site_settings.site_title }}
-    {% endblock %} - {{ site_settings.site_name }}
-</title>
+    
+    <title>
+        {% block title %}
+            {{ post.get_page_title|default:site_settings.site_title }}
+        {% endblock %} - {{ site_settings.site_name }}
+    </title>
+    
     <meta name="description" content="{% block meta_description %}{{ post.excerpt|default:'Stream and download the latest Nollywood, Hollywood, and Bollywood movies and TV shows on Hypeblog9jaTV. Get movie reviews, trailers, and more.' }}{% endblock %}">
 
     {# Open Graph Tags (for Facebook, WhatsApp, LinkedIn) #}
@@ -78,19 +80,38 @@
   gtag('config', 'G-3QKYHLCB32');
 </script>
     <style>
+        /* --- DARK THEME COLOR VARIABLES (Green Accent) --- */
         :root {
-            /* White Theme Colors */
-            --light-bg: #f5f5f5; /* Light background for body */
-            --lighter-bg: #ffffff; /* Even lighter for cards/sections */
-            --card-bg: #ffffff;
-            --primary: #e50914; /* Netflix Red */
-            --primary-hover: #f40612; /* Slightly brighter red */
-            --text: #333333; /* Dark text for readability */
-            --text-muted: #666666; /* Muted dark text */
-            --text-dim: #999999; /* Even dimmer text */
-            --border-color: #e0e0e0; /* Light border */
-            --shadow: rgba(0, 0, 0, 0.1); /* Lighter shadow */
-            --glow: rgba(229, 9, 20, 0.15); /* Lighter red glow */
+            /* Backgrounds */
+            --bg-darker: #0d1117; /* Very dark primary background (Body) */
+            --bg-dark: #161b22; /* Slightly less dark (Main Wrapper) */
+            --bg-card: #1f242c; /* Card/Section background */
+            --bg-card-hover: #2d333b; /* Hover/Interaction background */
+
+            /* Text */
+            --text-primary: #f0f6fc; /* Light text for readability */
+            --text-secondary: #c9d1d9; /* Secondary/Paragraph text */
+            --text-muted: #8b949e; /* Muted/Hint text */
+            
+            /* Primary Accent (Green/Teal for Hypeblog9jaTV theme) */
+            --primary-green: #00d084; 
+            --primary-green-dark: #00a86a; 
+
+            /* Borders and Shadows */
+            --border-color: #30363d; 
+            --shadow: rgba(0, 0, 0, 0.4); 
+            --shadow-sm: rgba(0, 0, 0, 0.2); 
+            --shadow-green: 0 4px 15px rgba(0, 208, 132, 0.4); 
+            
+            /* Mapping Old (Red/Light) variables to New (Green/Dark) variables */
+            --light-bg: var(--bg-darker);
+            --lighter-bg: var(--bg-dark);
+            --card-bg: var(--bg-card);
+            --primary: var(--primary-green);
+            --primary-hover: var(--primary-green-dark);
+            --text: var(--text-primary);
+            --text-dim: var(--text-muted);
+            --glow: rgba(0, 208, 132, 0.4); 
         }
 
         * {
@@ -98,8 +119,8 @@
         }
 
         body {
-            background-color: var(--light-bg); 
-            color: var(--text);
+            background-color: var(--light-bg); /* Now uses --bg-darker */
+            color: var(--text); /* Now uses --text-primary */
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
             margin: 0;
@@ -108,62 +129,64 @@
         }
 
         a {
-            color: var(--primary);
+            color: var(--primary); /* Now uses --primary-green */
             text-decoration: none;
             transition: all 0.3s ease;
         }
 
         a:hover {
-            color: var(--primary-hover);
-            text-shadow: 0 0 3px rgba(229, 9, 20, 0.2); 
+            color: var(--primary-hover); /* Now uses --primary-green-dark */
+            text-shadow: 0 0 3px var(--glow); /* Now uses green glow */
         }
 
         /* --- MODIFIED LAYOUT CSS START --- */
-        /* Custom Container - Now acts more like a wider Bootstrap container */
         .custom-container {
-            max-width: 1400px; /* Set a wider max-width for larger screens */
+            max-width: 1400px;
             width: 100%;
             margin: 0 auto;
-            /* No padding here, main-wrapper will handle it */
         }
 
-        /* Main Wrapper - Handles the boxed effect and responsive padding */
         .main-wrapper {
-            background: var(--lighter-bg); 
+            background: var(--lighter-bg); /* Now uses --bg-dark */
             border-radius: 15px;
-            border: 1px solid var(--border-color);
-            margin: 20px auto; /* Default margin for desktop */
+            border: 1px solid var(--border-color); /* Now uses dark border color */
+            margin: 20px auto;
             overflow: hidden;
-            box-shadow: 0 10px 20px var(--shadow); /* Lighter shadow */
-            /* Removed will-change for transform - use only for explicit animations */
+            box-shadow: 0 10px 20px var(--shadow);
         }
 
-        /* Responsive padding for main-wrapper */
-        .main-wrapper > *:not(.ad-section) { /* Apply padding to direct children except ad-section */
+        /* Responsive padding */
+        .main-wrapper > *:not(.ad-section) {
             padding-left: 20px;
             padding-right: 20px;
         }
 
-        /* Responsive padding for main-wrapper children on small screens */
-        @media (max-width: 767.98px) { /* Adjust for smaller screens (mobile, small tablets) */
+        @media (max-width: 767.98px) {
             .main-wrapper {
-                margin: 10px auto; /* Smaller margin on mobile */
-                border-radius: 10px; /* Slightly smaller border-radius */
+                margin: 10px auto;
+                border-radius: 10px;
             }
             .main-wrapper > *:not(.ad-section) {
-                padding-left: 15px; /* Reduce padding on smaller screens */
+                padding-left: 15px;
                 padding-right: 15px;
             }
         }
         /* --- MODIFIED LAYOUT CSS END --- */
 
 
-        /* Ad Section - More compact */
+        /* Ad Section */
         .ad-section {
-            background: var(--lighter-bg); 
+            background: var(--lighter-bg); /* Now uses --bg-dark */
             border-bottom: 1px solid var(--border-color);
-            padding: 15px 20px; /* Keep consistent padding here, or adjust as needed */
+            padding: 15px 20px;
             text-align: center;
+        }
+        
+        /* Custom alert for dark theme */
+        .alert-warning {
+            background-color: #ffc1071a; 
+            border-color: #ffc10740;
+            color: #ffc107;
         }
 
         /* Header and Footer styling within the wrapper */
@@ -177,12 +200,11 @@
             border-bottom-right-radius: 15px;
         }
 
-        /* Ensure header and footer have proper background and spacing */
         .main-wrapper header,
         .main-wrapper footer {
-            background: var(--lighter-bg); /* Match main-wrapper background */
+            background: var(--lighter-bg); /* Now uses --bg-dark */
             border-bottom: 1px solid var(--border-color);
-            padding-top: 15px; /* Keep padding here, adjusted for new wrapper padding */
+            padding-top: 15px;
             padding-bottom: 15px;
         }
 
@@ -197,12 +219,11 @@
             justify-content: center;
             align-items: center;
             margin: 8px 0;
-            background-color: var(--light-bg); /* Add a subtle background to ad containers */
+            background-color: var(--light-bg); /* Now uses --bg-darker */
             border-radius: 8px;
             padding: 5px;
         }
 
-        /* Content area padding - this will be impacted by the main-wrapper's padding now */
         .content-area {
             padding-top: 20px;
             padding-bottom: 20px;
@@ -210,7 +231,7 @@
 
         /* Category Headers - Sleeker */
         .category-header {
-            background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+            background: linear-gradient(90deg, var(--primary), var(--primary-hover)); /* Now uses Green gradient */
             padding: 12px 20px;
             margin: 20px 0 15px;
             font-size: 1.2rem;
@@ -220,7 +241,7 @@
             position: relative;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 4px 10px var(--glow); 
+            box-shadow: 0 4px 10px var(--glow); /* Now uses green glow */
             will-change: transform; 
         }
 
@@ -237,21 +258,21 @@
 
         /* Post Cards - Compact and Sleek */
         .post-card {
-            background: var(--card-bg); 
+            background: var(--card-bg); /* Now uses --bg-card */
             border: 1px solid var(--border-color);
             border-radius: 12px;
             overflow: hidden;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             height: 100%;
             position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
             will-change: transform, box-shadow, border-color; 
         }
 
         .post-card:hover {
             transform: translateY(-5px) scale(1.01); 
-            box-shadow: 0 15px 30px var(--shadow), 0 0 15px var(--glow); 
-            border-color: var(--primary);
+            box-shadow: 0 15px 30px var(--shadow), 0 0 15px var(--glow); /* Now uses green glow */
+            border-color: var(--primary); /* Now uses --primary-green */
         }
 
         /* Compact Image Container */
@@ -260,7 +281,7 @@
             padding-bottom: 60%;
             position: relative;
             overflow: hidden;
-            background: var(--light-bg); 
+            background: var(--light-bg); /* Now uses --bg-darker */
         }
 
         .post-card-img-container img {
@@ -277,7 +298,7 @@
             transform: scale(1.05); 
         }
 
-        /* Overlay gradient - Adjusted for white theme */
+        /* Overlay gradient - Adjusted for dark theme */
         .post-card-img-container::after {
             content: '';
             position: absolute;
@@ -285,7 +306,7 @@
             left: 0;
             right: 0;
             height: 50%;
-            background: linear-gradient(transparent, rgba(255,255,255,0.8)); 
+            background: linear-gradient(transparent, var(--bg-dark)); 
             pointer-events: none;
         }
 
@@ -298,7 +319,7 @@
         .post-card h3 {
             font-size: 0.9rem;
             font-weight: 600;
-            color: var(--text); 
+            color: var(--text); /* Now uses --text-primary */
             margin-bottom: 8px;
             line-height: 1.3;
             overflow: hidden;
@@ -310,7 +331,7 @@
 
         .post-card .category {
             font-size: 0.7rem;
-            color: var(--primary);
+            color: var(--primary); /* Now uses --primary-green */
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -326,30 +347,30 @@
 
         /* Sidebar - More compact */
         .sidebar-section {
-            background: var(--card-bg); 
+            background: var(--card-bg); /* Now uses --bg-card */
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 15px;
             margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
             transition: all 0.3s ease;
             will-change: transform, box-shadow, border-color; 
         }
 
         .sidebar-section:hover {
-            border-color: var(--primary);
+            border-color: var(--primary); /* Now uses --primary-green */
             box-shadow: 0 8px 20px var(--shadow); 
         }
 
         .sidebar-section h4 {
-            color: var(--primary);
+            color: var(--primary); /* Now uses --primary-green */
             margin-bottom: 15px;
             font-size: 1rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
             padding-bottom: 8px;
-            border-bottom: 2px solid var(--primary);
+            border-bottom: 2px solid var(--primary); /* Now uses --primary-green */
         }
 
         /* Compact sidebar items */
@@ -363,7 +384,7 @@
         }
 
         .sidebar-list-item:hover {
-            background: var(--light-bg); 
+            background: var(--bg-card-hover); /* New dark hover background */
             transform: translateX(5px);
         }
 
@@ -377,7 +398,7 @@
         }
 
         .sidebar-list-item-details a {
-            color: var(--text); 
+            color: var(--text); /* Now uses --text-primary */
             font-size: 0.85rem;
             font-weight: 500;
             line-height: 1.4;
@@ -390,7 +411,7 @@
 
         .sidebar-list-item-details span {
             font-size: 0.7rem;
-            color: var(--text-dim); 
+            color: var(--text-dim); /* Now uses --text-muted */
             margin-top: 2px;
         }
 
@@ -414,21 +435,21 @@
         }
 
         .trending-buttons .btn-primary {
-            background: linear-gradient(45deg, var(--primary), var(--primary-hover));
+            background: linear-gradient(45deg, var(--primary), var(--primary-hover)); /* Now uses Green gradient */
             border: none;
-            box-shadow: 0 4px 10px var(--glow); 
+            box-shadow: 0 4px 10px var(--glow); /* Now uses green glow */
         }
 
         .trending-buttons .btn-secondary {
-            background: var(--light-bg); 
+            background: var(--light-bg); /* Now uses --bg-darker */
             border: 1px solid var(--border-color);
-            color: var(--text-muted); 
+            color: var(--text-muted); /* Now uses dark text-muted */
             box-shadow: none; 
         }
 
         .trending-buttons .btn-secondary:hover {
-            background: var(--border-color); 
-            color: var(--text);
+            background: var(--border-color); /* Subtle dark hover background */
+            color: var(--text); /* Now uses --text-primary */
             transform: translateY(-1px); 
         }
 
@@ -446,12 +467,12 @@
         }
 
         .popular-search-list li:hover {
-            background: var(--light-bg); 
+            background: var(--bg-card-hover); /* New dark hover background */
             transform: translateX(5px);
         }
 
         .popular-search-list li a {
-            color: var(--text-muted); 
+            color: var(--text-muted); /* Now uses dark text-muted */
             font-size: 0.8rem;
         }
 
@@ -525,11 +546,6 @@
             }
         }
 
-        /* Extra large screens */
-        @media (min-width: 1400px) {
-            /* Now custom-container handles the max-width for very large screens */
-        }
-
         /* Animation keyframes */
         @keyframes fadeInUp {
             from {
@@ -553,22 +569,22 @@
             }
         }
 
-        /* Scrollbar styling - Adjusted for light theme */
+        /* Scrollbar styling - Adjusted for dark theme */
         ::-webkit-scrollbar {
             width: 8px;
         }
 
         ::-webkit-scrollbar-track {
-            background: var(--light-bg); 
+            background: var(--bg-darker); 
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--primary);
+            background: var(--primary); /* Now uses --primary-green */
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-hover);
+            background: var(--primary-hover); /* Now uses --primary-green-dark */
         }
     </style>
 </head>

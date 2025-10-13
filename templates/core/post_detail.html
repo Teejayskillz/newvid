@@ -26,23 +26,12 @@
         {{ ads_by_slug.thumbnail1|safe }}
     </div>
 <div class="featured-image">
-    <a href="{{ request.build_absolute_uri }}" 
-       title="Link to {{ post.title }}"
-       style="text-decoration: none; display: block;">
-        {% if post.thumbnail %}
-            <img src="{{ post.thumbnail.url }}"
-                 alt="{{ post.title }}"
-                 class="img-fluid w-100 rounded"
-                 style="max-height: 500px; object-fit: cover;"
-                 loading="lazy">
-        {% else %}
-            <img src="{% static 'images/default_thumbnail.jpg' %}"
-                 alt="No Image"
-                 class="img-fluid w-100 rounded"
-                 style="max-height: 500px; object-fit: cover;"
-                 loading="lazy">
-        {% endif %}
-    </a>
+    {% if post.thumbnail %}
+  <img src="{{ post.thumbnail.url }}"
+       alt="{{ post.title }}"
+       class="img-fluid w-100 rounded"
+       style="max-height:60vh; object-fit:contain;">
+{% endif %}
 </div>
     <div class="ad-slot-container header-ad-container"> {# Added new class for specific control #}
         {{ ads_by_slug.thumbnail2|safe }}
@@ -50,9 +39,8 @@
 
     <div class="post-content mb-5">
         {{ post.content|safe }}
-    </div>
 
-    {% if show_download_section %}
+        {% if show_download_section %}
     <div class="download-section">
         <h4 class="section-title">
             <i class="bi bi-download"></i>
@@ -109,6 +97,9 @@
         </div>
     </div>
     {% endif %}
+    </div>
+
+    
 
     <div class="share-buttons mt-5">
         <h5>Share this post:</h5>

@@ -23,7 +23,6 @@
                         </li>
                     </ol>
                 </nav>
-
                 <div class="search-header mb-4">
                     <h2 class="search-title mb-2">
                         <i class="bi bi-search me-2"></i>Search Results for: "<span class="query-highlight">{{ query }}</span>"
@@ -42,9 +41,10 @@
                 </div>
 
                 {% if results %}
-                <div class="latest-updates-grid">
+                <div class="latest-updates-grid balanced-poster-grid">
                     {% for post in results %}
                     <a href="{% url 'post_detail' category=post.category.slug slug=post.slug %}" class="post-card">
+                        
                         {% if post.thumbnail %}
                         <div class="post-card-img-container">
                             <img src="{{ post.thumbnail.url }}" alt="{{ post.title }}" loading="lazy">
@@ -54,8 +54,10 @@
                             <img src="{% static 'images/default_thumbnail.jpg' %}" alt="No Image" loading="lazy">
                         </div>
                         {% endif %}
+                        
                         <div class="post-card-content">
                             <h3>{{ post.title }}</h3>
+                            
                             <div class="post-meta">
                                 <span class="post-date">
                                     <i class="bi bi-calendar3 me-1"></i>{{ post.published_date|date:"M j, Y" }}
@@ -64,8 +66,9 @@
                                 <span class="category-badge">{{ post.category.name }}</span>
                                 {% endif %}
                             </div>
+                            
                             {% if post.excerpt %}
-                            <p class="post-excerpt">{{ post.excerpt|truncatechars:120 }}</p>
+                            <p class="post-excerpt">{{ post.excerpt|truncatechars:70 }}</p>
                             {% endif %}
                         </div>
                     </a>
@@ -151,9 +154,9 @@
                 {% else %}
                 <div class="no-results">
                     <div class="text-center py-5">
-                        <i class="bi bi-search-heart-fill" style="font-size: 4rem; color: #666666; margin-bottom: 20px;"></i> {# Hardcoded for visibility #}
-                        <h3 class="mb-3" style="color: #000000;">No results found for "<span class="text-danger">{{ query }}</span>"</h3> {# Hardcoded for visibility #}
-                        <p style="color: #666666;" class="mb-4">Please try a different keyword or check your spelling.</p> {# Hardcoded for visibility #}
+                        <i class="bi bi-search-heart-fill" style="font-size: 4rem; color: var(--text-dim); margin-bottom: 20px;"></i>
+                        <h3 class="mb-3" style="color: var(--text);">No results found for "<span class="text-danger">{{ query }}</span>"</h3>
+                        <p style="color: var(--text-muted);" class="mb-4">Please try a different keyword or check your spelling.</p>
                         <a href="{% url 'home' %}" class="btn btn-outline-dark">
                             <i class="bi bi-arrow-left me-2"></i>Back to Home
                         </a>
@@ -166,19 +169,54 @@
 </div>
 
 <style>
-/* Using CSS variables defined in core/base.html (or hardcoded for testing) */
+/* --- DARK THEME COLOR VARIABLES (Green Accent) --- */
+:root {
+    --bg-darker: #0d1117; 
+    --bg-dark: #161b22; 
+    --bg-card: #1f242c; 
+    --bg-card-hover: #2d333b; 
+    --text-primary: #f0f6fc; 
+    --text-secondary: #c9d1d9; 
+    --text-muted: #8b949e; 
+    --primary-green: #00d084; 
+    --primary-green-dark: #00a86a; 
+    --border-color: #30363d; 
+    --shadow: rgba(0, 0, 0, 0.4); 
+    --shadow-sm: rgba(0, 0, 0, 0.2); 
+    --shadow-green: 0 4px 15px rgba(0, 208, 132, 0.4); 
+    /* Mapping */
+    --light-bg: var(--bg-darker);
+    --lighter-bg: var(--bg-dark);
+    --card-bg: var(--bg-card);
+    --primary: var(--primary-green);
+    --primary-hover: var(--primary-green-dark);
+    --text: var(--text-primary);
+    --text-dim: var(--text-muted);
+    --glow: rgba(0, 208, 132, 0.4); 
+}
 
-/* Search-specific styles */
+/* --------------------------------------------------- */
+/* --- 1. SEARCH HEADER STYLES --- */
+/* --------------------------------------------------- */
+
 .search-title {
-    color: #000000; /* Hardcoded to black for testing */
+    color: var(--text) !important; 
+    background: var(--bg-card);
+    padding: 20px 30px;
+    border-radius: 15px;
     font-weight: 800;
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     margin-bottom: 15px;
-    text-shadow: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 15px var(--shadow); 
+    border: 1px solid var(--border-color); 
+    display: block;
+    width: 100%;
+    text-align: center;
 }
 
 .query-highlight {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 50%, var(--primary-light) 100%);
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -186,29 +224,29 @@
     position: relative;
 }
 
-.query-highlight::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-    border-radius: 2px;
+.results-info {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-align: center;
 }
 
-/* Breadcrumbs */
+
+/* --------------------------------------------------- */
+/* --- 2. BREADCRUMBS STYLES (MATCHING CATEGORY/TAG) --- */
+/* --------------------------------------------------- */
+
 .breadcrumb-custom {
     display: flex;
     align-items: center;
     list-style: none;
     margin: 0;
     padding: 15px 20px;
-    background: var(--lighter-bg);
+    background: var(--lighter-bg); 
     border-radius: 15px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-color); 
     gap: 10px;
-    box-shadow: 0 5px 15px var(--shadow-sm);
+    box-shadow: 0 2px 10px var(--shadow-sm); 
 }
 
 .breadcrumb-item-custom {
@@ -217,7 +255,7 @@
 }
 
 .breadcrumb-link {
-    color: #333333; /* Hardcoded for testing */
+    color: var(--text-muted); 
     text-decoration: none;
     transition: all 0.3s ease;
     padding: 5px 10px;
@@ -228,11 +266,11 @@
 
 .breadcrumb-link:hover {
     color: var(--primary);
-    background: var(--primary-alpha);
+    background: rgba(0, 208, 132, 0.1); 
 }
 
 .breadcrumb-separator {
-    color: #666666; /* Hardcoded for testing */
+    color: var(--text-dim); 
     font-size: 0.8rem;
 }
 
@@ -241,45 +279,111 @@
     font-weight: 600;
 }
 
-/* Results info */
-.results-info {
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: #666666; /* Hardcoded for testing */
+
+/* --------------------------------------------------- */
+/* --- 3. BALANCED POSTER GRID (Larger/Fewer Columns) --- */
+/* --------------------------------------------------- */
+
+.balanced-poster-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Default 2 columns (mobile) */
+    gap: 20px; 
+    padding-top: 5px; 
 }
 
-/* Post Card (from latest-updates-grid) */
+@media (min-width: 576px) {
+    .balanced-poster-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 columns on tablet/small desktop */
+    }
+}
+
+@media (min-width: 992px) {
+    .balanced-poster-grid {
+        grid-template-columns: repeat(4, 1fr); /* Max 4 columns on large desktop for larger posters */
+    }
+}
+
+/* --------------------------------------------------- */
+/* --- 4. POST CARD & CONTENT STYLES --- */
+/* --------------------------------------------------- */
+
 .post-card {
-    background: var(--light-bg);
+    display: block;
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
-    color: #000000; /* IMPORTANT: Hardcoded to black for testing */
-    /* ... other existing styles for post-card ... */
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 12px var(--shadow-sm);
+    position: relative; 
 }
 
-.post-card-content h3 {
-    color: #000000; /* IMPORTANT: Hardcoded to black for testing */
+.post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px var(--shadow-green);
+    border-color: var(--primary);
 }
 
-.post-card-content .post-excerpt {
-    color: #333333; /* IMPORTANT: Hardcoded to dark gray for testing */
+.post-card-img-container {
+    width: 100%;
+    padding-bottom: 133.33%; /* 3:4 aspect ratio */
+    position: relative;
+    overflow: hidden;
+    background: var(--light-bg); 
+    border-radius: 8px; 
 }
 
-/* Post meta styling */
+.post-card-img-container img {
+    border-radius: 8px; 
+}
+
+.post-card-img-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%; 
+    background: linear-gradient(transparent, var(--bg-dark)); 
+    pointer-events: none;
+}
+
+.post-card-content {
+    padding: 10px 12px;
+    text-align: center; 
+}
+
+.post-card h3 {
+    font-size: 1rem; 
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3; 
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Allowing 2 lines for the title */
+    -webkit-box-orient: vertical;
+}
+
 .post-meta {
     display: flex;
     align-items: center;
+    justify-content: center; /* Center items for clean look */
     gap: 12px;
+    margin-top: 5px;
     margin-bottom: 10px;
     flex-wrap: wrap;
 }
 
 .post-date {
-    color: #666666; /* Hardcoded for testing */
-    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
     display: flex;
     align-items: center;
 }
 
+/* Category Badge (inside content) */
 .category-badge {
     background: linear-gradient(45deg, var(--primary), var(--primary-hover));
     color: white;
@@ -291,18 +395,35 @@
     letter-spacing: 0.5px;
 }
 
-/* Netflix-Style Pagination */
+.post-excerpt {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Allow a short excerpt */
+    -webkit-box-orient: vertical;
+    margin-bottom: 0;
+    text-align: left;
+    padding: 0 5px;
+}
+
+/* --------------------------------------------------- */
+/* --- 5. PAGINATION STYLES (Themed) --- */
+/* --------------------------------------------------- */
+
 .pagination-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 50px;
-    padding: 30px 0;
-    gap: 20px;
-    background: var(--lighter-bg);
+    margin-top: 40px; 
+    padding: 20px 0; 
+    gap: 15px;
+    background: var(--lighter-bg); 
     border-radius: 20px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 5px 20px var(--shadow);
+    border: 1px solid var(--border-color); 
+    box-shadow: 0 5px 20px var(--shadow); 
 }
 
 .pagination-list {
@@ -323,19 +444,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 48px;
-    height: 48px;
-    padding: 10px 18px;
-    background: var(--light-bg);
-    border: 2px solid var(--border-color);
+    min-width: 44px; 
+    height: 44px; 
+    padding: 8px 16px; 
+    background: var(--light-bg); 
+    border: 2px solid var(--border-color); 
     border-radius: 12px;
-    color: #666666; /* Hardcoded for testing */
+    color: var(--text-muted); 
     text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500; 
+    transition: all 0.3s ease; 
     position: relative;
     overflow: hidden;
-    will-change: transform, background, border-color, box-shadow;
+    will-change: transform, background, border-color, box-shadow; 
 }
 
 .page-link::before {
@@ -354,7 +475,7 @@
     color: #ffffff;
     border-color: var(--primary);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px var(--glow);
+    box-shadow: 0 5px 15px var(--glow);
 }
 
 .page-link:hover::before {
@@ -365,57 +486,61 @@
     background: linear-gradient(45deg, var(--primary), var(--primary-hover));
     border-color: var(--primary);
     color: #ffffff;
-    font-weight: 800;
+    font-weight: 700;
     box-shadow: 0 4px 15px var(--glow);
-    transform: scale(1.03);
+    transform: scale(1.03); 
 }
 
 .page-link.prev-next {
-    padding: 10px 24px;
-    gap: 10px;
-    font-weight: 700;
+    padding: 8px 20px;
+    gap: 8px;
+    font-weight: 600;
     min-width: auto;
 }
 
 .page-link.disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    background: var(--light-bg);
-    border-color: var(--border-color);
-    color: #666666; /* Hardcoded for testing */
-}
-
-.page-link.disabled:hover {
-    transform: none;
-    box-shadow: none;
-    border-color: var(--border-color);
+    background: var(--light-bg); 
+    border-color: var(--border-color); 
+    color: var(--text-dim); 
 }
 
 .page-info {
-    color: #666666; /* Hardcoded for testing */
-    font-size: 1rem;
+    color: var(--text-muted); 
+    font-size: 0.9rem;
     font-weight: 500;
-    background: var(--light-bg);
+    background: var(--light-bg); 
     padding: 10px 20px;
     border-radius: 25px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color); 
 }
 
 /* No Results Styling */
 .no-results {
-    background: var(--lighter-bg);
+    background: var(--lighter-bg); 
     border-radius: 20px;
     margin: 40px 0;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 5px 20px var(--shadow);
+    border: 1px solid var(--border-color); 
+    box-shadow: 0 5px 15px var(--shadow); 
 }
 
-/* Mobile Responsive */
+.no-results .btn-outline-dark {
+    color: var(--primary); 
+    border-color: var(--primary);
+}
+
+.no-results .btn-outline-dark:hover {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+/* Mobile Responsive adjustments */
 @media (max-width: 768px) {
     .search-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
         text-align: center;
+        padding: 15px 20px;
     }
     
     .breadcrumb-custom {
@@ -423,43 +548,24 @@
         gap: 8px;
     }
     
-    .pagination-list {
-        gap: 4px;
-    }
-    
     .page-link {
-        min-width: 42px;
-        height: 42px;
-        padding: 8px 14px;
+        min-width: 40px;
+        height: 40px;
+        padding: 6px 12px;
         font-size: 0.9rem;
     }
     
     .page-link.prev-next {
-        padding: 8px 18px;
+        padding: 6px 16px;
     }
     
-    .results-info {
-        text-align: center;
+    .post-card h3 {
+        font-size: 0.9rem; 
     }
     
-    .post-meta {
-        justify-content: center;
-    }
-}
-
-/* Smooth Animations */
-.latest-updates-grid {
-    animation: fadeInUp 0.6s ease-out;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    .post-excerpt {
+        -webkit-line-clamp: 1; /* Reduce excerpt on mobile */
+        font-size: 0.8rem;
     }
 }
 </style>

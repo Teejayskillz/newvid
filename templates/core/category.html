@@ -35,7 +35,6 @@
                         </li>
                     </ol>
                 </nav>
-
                 <div class="category-header mb-4">
                     <h2 class="category-title mb-2">
                         <i class="bi bi-collection-fill me-2"></i>{{ category.name }}
@@ -57,9 +56,10 @@
                 </div>
 
                 {% if posts %}
-                <div class="latest-updates-grid">
+                <div class="latest-updates-grid balanced-poster-grid">
                     {% for post in posts %}
                     <a href="{% url 'post_detail' category=post.category.slug slug=post.slug %}" class="post-card">
+                        
                         {% if post.thumbnail %}
                         <div class="post-card-img-container">
                             <img src="{{ post.thumbnail.url }}" alt="{{ post.title }}" loading="lazy">
@@ -69,19 +69,19 @@
                             <img src="{% static 'images/default_thumbnail.jpg' %}" alt="No Image" loading="lazy">
                         </div>
                         {% endif %}
+                        
+                        {% if post.category %}
+                        <span class="category-badge badge-on-poster">{{ post.category.name }}</span>
+                        {% endif %}
+
                         <div class="post-card-content">
                             <h3>{{ post.title }}</h3>
+                            
                             <div class="post-meta">
                                 <span class="post-date">
                                     <i class="bi bi-calendar3 me-1"></i>{{ post.published_date|date:"M j, Y" }}
                                 </span>
-                                {% if post.category %}
-                                <span class="category-badge">{{ post.category.name }}</span>
-                                {% endif %}
                             </div>
-                            {% if post.excerpt %}
-                            <p class="post-excerpt">{{ post.excerpt|truncatechars:120 }}</p>
-                            {% endif %}
                         </div>
                     </a>
                     {% endfor %}
@@ -169,7 +169,7 @@
                         <i class="bi bi-folder-x" style="font-size: 4rem; color: var(--text-dim); margin-bottom: 20px;"></i>
                         <h3 class="mb-3" style="color: var(--text);">No posts found in this category</h3>
                         <p class="text-muted mb-4">This category doesn't have any published posts yet.</p>
-                        <a href="{% url 'home' %}" class="btn btn-outline-dark"> {# Changed to btn-outline-dark for white theme #}
+                        <a href="{% url 'home' %}" class="btn btn-outline-dark"> 
                             <i class="bi bi-arrow-left me-2"></i>Back to Home
                         </a>
                     </div>
@@ -181,20 +181,47 @@
 </div>
 
 <style>
-/* Assuming :root variables from base.html are available here */
-/* Custom Breadcrumbs */
+/* --- DARK THEME COLOR VARIABLES (Green Accent) - Pulled from base.html update --- */
+:root {
+    --bg-darker: #0d1117; 
+    --bg-dark: #161b22; 
+    --bg-card: #1f242c; 
+    --bg-card-hover: #2d333b; 
+    --text-primary: #f0f6fc; 
+    --text-secondary: #c9d1d9; 
+    --text-muted: #8b949e; 
+    --primary-green: #00d084; 
+    --primary-green-dark: #00a86a; 
+    --border-color: #30363d; 
+    --shadow: rgba(0, 0, 0, 0.4); 
+    --shadow-sm: rgba(0, 0, 0, 0.2); 
+    --shadow-green: 0 4px 15px rgba(0, 208, 132, 0.4); 
+    /* Mapping */
+    --light-bg: var(--bg-darker);
+    --lighter-bg: var(--bg-dark);
+    --card-bg: var(--bg-card);
+    --primary: var(--primary-green);
+    --primary-hover: var(--primary-green-dark);
+    --text: var(--text-primary);
+    --text-dim: var(--text-muted);
+    --glow: rgba(0, 208, 132, 0.4); 
+}
+
+/* --------------------------------------------------- */
+/* --- 1. BREADCRUMBS FIX (The key fix) --- */
+/* --------------------------------------------------- */
+
 .breadcrumb-custom {
     display: flex;
     align-items: center;
     list-style: none;
     margin: 0;
     padding: 15px 20px;
-    background: var(--lighter-bg); /* Changed to white */
+    background: var(--lighter-bg); 
     border-radius: 15px;
-    /* REMOVED backdrop-filter */
-    border: 1px solid var(--border-color); /* Lighter border */
+    border: 1px solid var(--border-color); 
     gap: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Lighter shadow */
+    box-shadow: 0 2px 10px var(--shadow-sm); 
 }
 
 .breadcrumb-item-custom {
@@ -203,7 +230,7 @@
 }
 
 .breadcrumb-link {
-    color: var(--text-muted); /* Muted dark text */
+    color: var(--text-muted); 
     text-decoration: none;
     transition: all 0.3s ease;
     padding: 5px 10px;
@@ -214,11 +241,11 @@
 
 .breadcrumb-link:hover {
     color: var(--primary);
-    background: rgba(229, 9, 20, 0.08); /* Lighter background on hover */
+    background: rgba(0, 208, 132, 0.1); 
 }
 
 .breadcrumb-separator {
-    color: var(--text-dim); /* Dimmer dark text */
+    color: var(--text-dim); 
     font-size: 0.8rem;
 }
 
@@ -227,32 +254,154 @@
     font-weight: 600;
 }
 
-/* Enhanced Category Header */
-.category-header {
-    /* Uses base.html's .category-header styles directly */
-    /* No need to redefine if it's already in base.html's global styles */
+
+/* --------------------------------------------------- */
+/* --- 2. BALANCED POSTER GRID (Larger/Fewer Columns) --- */
+/* --------------------------------------------------- */
+
+.balanced-poster-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Default 2 columns (mobile) */
+    gap: 20px; 
+    padding-top: 5px; 
 }
+
+@media (min-width: 576px) {
+    .balanced-poster-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 columns on tablet/small desktop */
+    }
+}
+
+@media (min-width: 992px) {
+    .balanced-poster-grid {
+        grid-template-columns: repeat(4, 1fr); /* Max 4 columns on large desktop for larger posters */
+    }
+}
+
+/* --------------------------------------------------- */
+/* --- 3. POST CARD & ASPECT RATIO (3:4 Poster Style) --- */
+/* --------------------------------------------------- */
+
+.post-card {
+    display: block;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 12px var(--shadow-sm);
+    position: relative; 
+}
+
+.post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px var(--shadow-green);
+    border-color: var(--primary);
+}
+
+.post-card-img-container {
+    width: 100%;
+    padding-bottom: 133.33%; /* 3:4 aspect ratio */
+    position: relative;
+    overflow: hidden;
+    background: var(--light-bg); 
+    border-radius: 8px; 
+}
+
+.post-card-img-container img {
+    border-radius: 8px; 
+}
+
+.post-card-img-container::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%; 
+    background: linear-gradient(transparent, var(--bg-dark)); 
+    pointer-events: none;
+}
+
+/* --------------------------------------------------- */
+/* --- 4. CATEGORY BADGE (Top Right Placement) --- */
+/* --------------------------------------------------- */
+
+.category-badge.badge-on-poster {
+    position: absolute; 
+    top: 10px; 
+    right: 10px; 
+    z-index: 10; 
+    
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    background-color: rgba(0, 208, 132, 0.9); 
+    color: #fff;
+    font-weight: 700;
+    border-radius: 5px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); 
+    margin: 0; 
+    background: rgba(0, 208, 132, 0.9); 
+}
+
+/* --------------------------------------------------- */
+/* --- 5. TITLE AND META (Optimized for space) --- */
+/* --------------------------------------------------- */
+
+.post-card-content {
+    padding: 10px 12px;
+    text-align: center; 
+}
+
+.post-card h3 {
+    font-size: 1rem; 
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3; 
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
+}
+
+.post-meta {
+    display: block; 
+    margin-top: 5px;
+    margin-bottom: 0; 
+}
+
+.post-date {
+    justify-content: center; 
+    font-size: 0.75rem; 
+    color: var(--text-muted);
+}
+
+
+/* --------------------------------------------------- */
+/* --- 6. CATEGORY PAGE SPECIFIC STYLES --- */
+/* --------------------------------------------------- */
 
 .category-title {
     color: #ffffff !important;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 50%, #ff6b6b 100%);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 50%, var(--primary) 100%);
     padding: 20px 30px;
     border-radius: 15px;
     font-weight: 800;
     font-size: 2.5rem;
     margin-bottom: 15px;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Lighter shadow */
-    box-shadow: 0 5px 15px var(--glow); /* Lighter glow */
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.4); 
+    box-shadow: 0 5px 15px var(--glow); 
+    border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
-    display: inline-block;
+    display: block; 
     width: 100%;
     text-align: center;
-    will-change: transform, box-shadow; /* Hint for animation */
 }
 
-/* Add shimmer effect */
 .category-title::before {
     content: '';
     position: absolute;
@@ -260,70 +409,31 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     animation: shimmer 3s infinite;
-    will-change: left; /* Hint for shimmer animation */
-}
-
-@keyframes shimmer {
-    0% { left: -100%; }
-    100% { left: 100%; }
+    will-change: left; 
 }
 
 .category-description {
-    color: var(--text-muted); /* Muted dark text */
-    font-size: 1.1rem;
-    margin-bottom: 15px;
-    line-height: 1.6;
+    color: var(--text-muted); 
 }
 
-.results-info {
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: var(--text-muted); /* Muted dark text */
-}
 
-/* Enhanced Post Meta */
-.post-meta {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
-    flex-wrap: wrap;
-}
+/* --------------------------------------------------- */
+/* --- 7. PAGINATION STYLES (Kept Original/Fixed) --- */
+/* --------------------------------------------------- */
 
-.post-date {
-    color: var(--text-dim); /* Dimmer dark text */
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-}
-
-.category-badge {
-    background: linear-gradient(45deg, var(--primary), var(--primary-hover)); /* Netflix red gradient */
-    color: white;
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    will-change: background, box-shadow; /* Hint for hover effect */
-}
-
-/* Netflix-Style Pagination */
 .pagination-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 50px;
-    padding: 30px 0;
-    gap: 20px;
-    background: var(--lighter-bg); /* Changed to white */
+    margin-top: 40px; 
+    padding: 20px 0; 
+    gap: 15px;
+    background: var(--lighter-bg); 
     border-radius: 20px;
-    /* REMOVED backdrop-filter */
-    border: 1px solid var(--border-color); /* Lighter border */
-    box-shadow: 0 5px 20px var(--shadow); /* Lighter shadow */
+    border: 1px solid var(--border-color); 
+    box-shadow: 0 5px 20px var(--shadow); 
 }
 
 .pagination-list {
@@ -344,20 +454,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 48px;
-    height: 48px;
-    padding: 10px 18px;
-    background: var(--light-bg); /* Light background */
-    border: 2px solid var(--border-color); /* Lighter border */
+    min-width: 44px; 
+    height: 44px; 
+    padding: 8px 16px; 
+    background: var(--light-bg); 
+    border: 2px solid var(--border-color); 
     border-radius: 12px;
-    color: var(--text-muted); /* Muted dark text */
+    color: var(--text-muted); 
     text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    /* REMOVED backdrop-filter */
+    font-weight: 500; 
+    transition: all 0.3s ease; 
     position: relative;
     overflow: hidden;
-    will-change: transform, background, border-color, box-shadow; /* Hint for animation */
+    will-change: transform, background, border-color, box-shadow; 
 }
 
 .page-link::before {
@@ -375,8 +484,8 @@
 .page-link:hover {
     color: #ffffff;
     border-color: var(--primary);
-    transform: translateY(-2px); /* Slightly less aggressive lift */
-    box-shadow: 0 5px 15px var(--glow); /* Lighter glow */
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--glow);
 }
 
 .page-link:hover::before {
@@ -387,53 +496,61 @@
     background: linear-gradient(45deg, var(--primary), var(--primary-hover));
     border-color: var(--primary);
     color: #ffffff;
-    font-weight: 800;
-    box-shadow: 0 3px 10px var(--glow); /* Lighter glow */
-    transform: scale(1.03); /* Slightly less aggressive scale */
+    font-weight: 700;
+    box-shadow: 0 4px 15px var(--glow);
+    transform: scale(1.03); 
 }
 
 .page-link.prev-next {
-    padding: 10px 24px;
-    gap: 10px;
-    font-weight: 700;
+    padding: 8px 20px;
+    gap: 8px;
+    font-weight: 600;
     min-width: auto;
 }
 
 .page-link.disabled {
-    opacity: 0.5; /* Slightly increased opacity for visibility */
+    opacity: 0.5;
     cursor: not-allowed;
-    background: var(--light-bg); /* Light background for disabled */
-    border-color: var(--border-color); /* Light border */
-    color: var(--text-dim); /* Dimmer dark text */
-}
-
-.page-link.disabled:hover {
-    transform: none;
-    box-shadow: none;
-    border-color: var(--border-color);
+    background: var(--light-bg); 
+    border-color: var(--border-color); 
+    color: var(--text-dim); 
 }
 
 .page-info {
-    color: var(--text-muted); /* Muted dark text */
-    font-size: 1rem;
+    color: var(--text-muted); 
+    font-size: 0.9rem;
     font-weight: 500;
-    background: var(--light-bg); /* Light background */
+    background: var(--light-bg); 
     padding: 10px 20px;
     border-radius: 25px;
-    border: 1px solid var(--border-color); /* Light border */
+    border: 1px solid var(--border-color); 
 }
 
 /* No Results Styling */
 .no-results {
-    background: var(--lighter-bg); /* Changed to white */
+    background: var(--lighter-bg); 
     border-radius: 20px;
     margin: 40px 0;
-    border: 1px solid var(--border-color); /* Light border */
-    /* REMOVED backdrop-filter */
-    box-shadow: 0 5px 15px var(--shadow); /* Lighter shadow */
+    border: 1px solid var(--border-color); 
+    box-shadow: 0 5px 15px var(--shadow); 
 }
 
-/* Mobile Responsive */
+.no-results .btn-outline-dark {
+    color: var(--primary); 
+    border-color: var(--primary);
+}
+
+.no-results .btn-outline-dark:hover {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Mobile Responsive adjustments */
 @media (max-width: 768px) {
     .category-title {
         font-size: 2rem;
@@ -444,43 +561,20 @@
         gap: 8px;
     }
     
-    .pagination-list {
-        gap: 4px;
-    }
-    
     .page-link {
-        min-width: 42px;
-        height: 42px;
-        padding: 8px 14px;
+        min-width: 40px;
+        height: 40px;
+        padding: 6px 12px;
         font-size: 0.9rem;
     }
     
     .page-link.prev-next {
-        padding: 8px 18px;
+        padding: 6px 16px;
     }
     
-    .results-info {
-        text-align: center;
+    .post-card h3 {
+        font-size: 0.9rem; 
     }
-    
-    .post-meta {
-        justify-content: center;
-    }
-}
-
-/* Smooth Animations - Adjusted and integrated with base.html animations */
-/* .latest-updates-grid animation is handled by individual .post-card animations in base.html */
-/* Removing redundant .latest-updates-grid animation here */
-
-/* Hover Effects for Post Cards - Keep in sync with base.html for consistency */
-.post-card:hover {
-    transform: translateY(-5px) scale(1.01); /* Reduced scale slightly */
-    box-shadow: 0 10px 30px var(--shadow), 0 0 15px var(--glow); /* Lighter shadow & glow */
-}
-
-.post-card:hover .category-badge {
-    background: linear-gradient(45deg, var(--primary-hover), #ff6b6b); /* Slightly adjusted gradient on hover */
-    box-shadow: 0 3px 10px var(--glow); /* Lighter glow */
 }
 </style>
 {% endblock %}
