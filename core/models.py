@@ -89,7 +89,7 @@ class Post(models.Model):
     )
     download_section_title = models.CharField(
         max_length=100,
-        default="Download Links",
+        default="Download Below",
         blank=True
     )
     download_button_text = models.CharField(
