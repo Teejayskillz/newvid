@@ -712,33 +712,42 @@
     </div>
     <script>
 (function() {
+  const POPUNDER_URL = 'https://otieu.com/4/9394021';
+  const THROTTLE_KEY = 'popunderLastShown';
+  const THROTTLE_DELAY = 60 * 60 * 1000; // 1 hour in milliseconds
+
+  function shouldAllowPopunder() {
+    const lastShown = localStorage.getItem(THROTTLE_KEY);
+    if (!lastShown) return true;
+    const elapsed = Date.now() - parseInt(lastShown, 10);
+    return elapsed >= THROTTLE_DELAY;
+  }
+
   function openPopunder() {
-    // Open pop-under only once per session (optional)
-    if (sessionStorage.getItem('popunderShown')) return;
+    if (!shouldAllowPopunder()) return;
 
-    var url = 'https://otieu.com/4/9394021';
-    var pu = window.open(url, '_blank', 'width=1,height=1,left=0,top=0,scrollbars=0');
-
+    const pu = window.open(POPUNDER_URL, '_blank', 'width=1,height=1,left=0,top=0,scrollbars=0');
     if (pu) {
       pu.blur();
       window.focus();
-      try { pu.opener = null; } catch(e) {}
-      sessionStorage.setItem('popunderShown', '1'); // prevent repeat on same session
+      try { pu.opener = null; } catch (e) {}
+      localStorage.setItem(THROTTLE_KEY, Date.now().toString());
     }
   }
 
-  // Listen for clicks on any <a> tag
+  // Attach to all link clicks using event delegation
   document.addEventListener('click', function(e) {
-    var target = e.target;
-    // Traverse up in case child elements inside <a> were clicked
-    while (target && target.nodeName !== 'A') {
-      target = target.parentElement;
+    let el = e.target;
+    while (el && el.nodeName !== 'A') {
+      el = el.parentElement;
     }
-    if (target && target.href) {
-      // Delay pop-under slightly to ensure it's tied to user action
-      setTimeout(openPopunder, 100);
+    if (el && el.href) {
+      // Only trigger if it's a real navigation click (not just # or javascript:)
+      if (el.href && !el.href.startsWith('#') && !el.href.toLowerCase().startsWith('javascript:')) {
+        setTimeout(openPopunder, 100);
+      }
     }
-  }, true); // Use capturing phase for better reliability
+  }, true);
 })();
 </script>
 
