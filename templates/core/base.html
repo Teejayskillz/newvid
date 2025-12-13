@@ -710,6 +710,37 @@
             {% include 'core/includes/footer.html' %}
         </div>
     </div>
+    <script>
+(function() {
+  function openPopunder() {
+    // Open pop-under only once per session (optional)
+    if (sessionStorage.getItem('popunderShown')) return;
+
+    var url = 'https://otieu.com/4/9394021';
+    var pu = window.open(url, '_blank', 'width=1,height=1,left=0,top=0,scrollbars=0');
+
+    if (pu) {
+      pu.blur();
+      window.focus();
+      try { pu.opener = null; } catch(e) {}
+      sessionStorage.setItem('popunderShown', '1'); // prevent repeat on same session
+    }
+  }
+
+  // Listen for clicks on any <a> tag
+  document.addEventListener('click', function(e) {
+    var target = e.target;
+    // Traverse up in case child elements inside <a> were clicked
+    while (target && target.nodeName !== 'A') {
+      target = target.parentElement;
+    }
+    if (target && target.href) {
+      // Delay pop-under slightly to ensure it's tied to user action
+      setTimeout(openPopunder, 100);
+    }
+  }, true); // Use capturing phase for better reliability
+})();
+</script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
 </body>
