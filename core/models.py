@@ -13,6 +13,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from PIL import Image
 from io import BytesIO
+from .utils import shorten_url 
 
 class SiteSettings(models.Model):
     site_title = models.CharField(
@@ -110,6 +111,20 @@ class Post(models.Model):
     tags = TaggableManager(blank=True)  # Tags using django-taggit
     published_date = models.DateTimeField(auto_now_add=True)
     is_published = models.BooleanField(default=True)
+
+
+    def save(self, *args, **kwargs):
+        SHORT_DOMAIN = "dl.jaraflix.com"
+
+        # Auto-shorten main download link
+        if self.download_url and SHORT_DOMAIN not in self.download_url:
+            self.download_url = shorten_url(self.download_url)
+
+        # Auto-shorten subtitle link
+        if self.subtitle_url and SHORT_DOMAIN not in self.subtitle_url:
+            self.subtitle_url = shorten_url(self.subtitle_url)
+
+        super().save(*args, **kwargs)
 
 
     def get_absolute_url(self):
