@@ -276,7 +276,7 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple', # Use the simple formatter
             
-            'encoding': 'utf-8',
+            
         },
         # You could add a file handler for production, e.g.:
         # 'file': {
