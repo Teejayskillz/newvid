@@ -1,4 +1,7 @@
 import requests
+import logging
+
+logger = logging.getLogger(__name__)
 
 SHORTENER_API = "https://dl.jaraflix.com/api/shorten/"
 
@@ -14,11 +17,14 @@ def shorten_url(long_url, title=None):
             timeout=10
         )
 
+        logger.warning(f"Shortener status: {res.status_code}")
+        logger.warning(f"Shortener response: {res.text}")
+
         data = res.json()
         if res.status_code == 200 and "short_url" in data:
             return data["short_url"]
 
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(f"Shortener error: {e}")
 
     return long_url
