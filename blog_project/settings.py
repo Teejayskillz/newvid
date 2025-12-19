@@ -275,6 +275,8 @@ LOGGING = {
         'console': { # Output logs to the console (where your runserver is)
             'class': 'logging.StreamHandler',
             'formatter': 'simple', # Use the simple formatter
+            
+            'encoding': 'utf-8',
         },
         # You could add a file handler for production, e.g.:
         # 'file': {
@@ -310,22 +312,3 @@ LOGGING = {
 }
 
 TAGGIT_TAG_MODEL = 'core.MyCustomTag' 
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "filename": "/home/jaraflix/shortener_debug.log",
-        },
-    },
-    "loggers": {
-        "core": {
-            "handlers": ["file"],
-            "level": "DEBUG",
-            "propagate": True,
-        },
-    },
-}

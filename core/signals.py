@@ -112,3 +112,38 @@ def auto_post_to_telegram(sender, instance, **kwargs):
             loop.run_until_complete(send_telegram_message_async())
     else:
         logger.info(f"Post '{instance.title}' not published, skipping Telegram post.")
+
+
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+from urllib.parse import urlparse
+
+from .models import DownloadQuality, Subtitle
+from .utils import shorten_url
+
+SHORT_DOMAIN = "dl.jaraflix.com"
+
+
+def is_shortened(url):
+    try:
+        return SHORT_DOMAIN in urlparse(url).netloc
+    except Exception:
+        return False
+
+
+@receiver(pre_save, sender=DownloadQuality)
+def shorten_download_quality_url(sender, instance, **kwargs):
+    if instance.download_url and not is_shortened(instance.download_url):
+        instance.download_url = shorten_url(
+            instance.download_url,
+            f"{instance.post.title} {instance.quality}"
+        )
+
+
+@receiver(pre_save, sender=Subtitle)
+def shorten_subtitle_url(sender, instance, **kwargs):
+    if instance.download_url and not is_shortened(instance.download_url):
+        instance.download_url = shorten_url(
+            instance.download_url,
+            f"{instance.post.title} {instance.language} Subtitle"
+        )

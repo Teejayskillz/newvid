@@ -117,16 +117,16 @@ class Post(models.Model):
     tags = TaggableManager(blank=True)
     published_date = models.DateTimeField(auto_now_add=True)
     is_published = models.BooleanField(default=True)
-    from django.db import transaction
 
     def save(self, *args, **kwargs):
         from .utils import shorten_url
         from urllib.parse import urlparse
-        from django.utils.text import slugify
 
         SHORT_DOMAIN = "dl.jaraflix.com"
 
+        # Ensure slug is set
         if not self.slug:
+            from django.utils.text import slugify
             self.slug = slugify(self.title)
 
         def is_shortened(url):
@@ -135,25 +135,15 @@ class Post(models.Model):
             except:
                 return False
 
+        # Shorten main download link
         if self.download_url and not is_shortened(self.download_url):
             self.download_url = shorten_url(self.download_url, self.title)
 
+        # Shorten subtitle link
         if self.subtitle_url and not is_shortened(self.subtitle_url):
             self.subtitle_url = shorten_url(self.subtitle_url, f"{self.title} Subtitle")
 
-        super().save(*args, **kwargs)  # Save post first to have PK
-
-        # Shorten related DownloadQuality URLs
-        for quality in self.qualities.all():
-            if quality.download_url and not is_shortened(quality.download_url):
-                quality.download_url = shorten_url(quality.download_url, f"{self.title} {quality.quality}")
-                quality.save(update_fields=['download_url'])
-
-        # Shorten related Subtitle URLs
-        for subtitle in self.subtitles.all():
-            if subtitle.download_url and not is_shortened(subtitle.download_url):
-                subtitle.download_url = shorten_url(subtitle.download_url, f"{self.title} {subtitle.language} Subtitle")
-                subtitle.save(update_fields=['download_url'])
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('post_detail', kwargs={
