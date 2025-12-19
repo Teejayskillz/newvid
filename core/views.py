@@ -25,7 +25,7 @@ def home(request):
         posts = Post.objects.filter(
             is_published=True,
             category__in=section.categories.all()
-        ).order_by('-published_date')[:6]  # 6 posts per section
+        ).order_by('-updated_date')[:6]  # 6 posts per section
         
         section_data.append({
             'title': section.title,
@@ -39,7 +39,7 @@ def home(request):
         is_published=True
     ).exclude(
         category__in=section_categories
-    ).order_by('-published_date')
+    ).order_by('-updated_date')
     
     # Handle search functionality
     query = request.GET.get('q')

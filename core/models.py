@@ -116,6 +116,7 @@ class Post(models.Model):
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True)
     tags = TaggableManager(blank=True)
     published_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
