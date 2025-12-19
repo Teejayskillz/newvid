@@ -1,32 +1,24 @@
-# posts/utils.py
 import requests
 
-def shorten_url(original_url):
-    """
-    Send link to your URL shortener
-    Return shortened URL
-    """
+SHORTENER_API = "https://dl.jaraflix.com/api/shorten/"
 
-    API_URL = "https://dl.jaraflix.com/api/shorten"
-    API_KEY = "Tijania32000"
 
+def shorten_url(long_url, title=None):
     try:
-        response = requests.post(
-            API_URL,
+        res = requests.post(
+            SHORTENER_API,
             json={
-                "url": original_url,
-                "api_key": API_KEY
+                "url": long_url,
+                "title": title
             },
             timeout=10
         )
 
-        data = response.json()
-
-        if response.status_code == 200 and "short_url" in data:
+        data = res.json()
+        if res.status_code == 200 and "short_url" in data:
             return data["short_url"]
 
     except Exception:
         pass
 
-    # If anything fails, keep original link
-    return original_url
+    return long_url
