@@ -118,19 +118,18 @@ class Post(models.Model):
         SHORT_DOMAIN = "dl.jaraflix.com"
 
     # Auto-shorten main download link
-    if self.download_url and SHORT_DOMAIN not in self.download_url:
-        self.download_url = shorten_url(
+        if self.download_url and SHORT_DOMAIN not in self.download_url:
+            self.download_url = shorten_url(
             self.download_url,
             self.title
         )
 
     # Auto-shorten subtitle link
-    if self.subtitle_url and SHORT_DOMAIN not in self.subtitle_url:
-        self.subtitle_url = shorten_url(
-            self.subtitle_url,
-            f"{self.title} Subtitle"
-        )
-
+        if self.subtitle_url and SHORT_DOMAIN not in self.subtitle_url:
+            self.subtitle_url = shorten_url(
+                self.subtitle_url,
+                f"{self.title} Subtitle"
+            )
     super().save(*args, **kwargs)
 
     def get_absolute_url(self):
