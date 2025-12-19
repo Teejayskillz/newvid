@@ -130,7 +130,7 @@ class Post(models.Model):
                 self.subtitle_url,
                 f"{self.title} Subtitle"
             )
-    super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         # This assumes your post detail URL pattern is named 'post_detail'
