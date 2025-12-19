@@ -55,6 +55,14 @@ class Category(models.Model):
         # that takes the category's slug as an argument.
         return reverse('category', kwargs={'slug': self.slug})
 
+
+from django.contrib.auth import get_user_model
+import logging
+from urllib.parse import urlparse
+
+User = get_user_model()
+logger = logging.getLogger(__name__)
+
 class Post(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
@@ -79,9 +87,8 @@ class Post(models.Model):
         help_text="A brief summary of the post, used for previews (e.g., on index pages, social media, Telegram)."
     )
 
-    # ADD THIS LINE FOR THE VIEWS COUNT
-    views = models.IntegerField(default=0) # Added this line for tracking views
-    # END ADDITION
+    # Views count
+    views = models.IntegerField(default=0)
 
     enable_downloads = models.BooleanField(
         default=True,
@@ -106,36 +113,47 @@ class Post(models.Model):
     )
 
     author = models.ForeignKey(User, on_delete=models.CASCADE, default=2)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-    tags = TaggableManager(blank=True)  # Tags using django-taggit
+    category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True)
+    tags = TaggableManager(blank=True)
     published_date = models.DateTimeField(auto_now_add=True)
     is_published = models.BooleanField(default=True)
 
-
     def save(self, *args, **kwargs):
-        from .utils import shorten_url  # ✅ SAFE import here
+        from .utils import shorten_url  # Safe import here
 
         SHORT_DOMAIN = "dl.jaraflix.com"
 
-    # Auto-shorten main download link
-        if self.download_url and SHORT_DOMAIN not in self.download_url:
-            self.download_url = shorten_url(
-            self.download_url,
-            self.title
-        )
+        def is_shortened(url):
+            try:
+                return urlparse(url).netloc.endswith(SHORT_DOMAIN)
+            except:
+                return False
 
-    # Auto-shorten subtitle link
-        if self.subtitle_url and SHORT_DOMAIN not in self.subtitle_url:
-            self.subtitle_url = shorten_url(
-                self.subtitle_url,
-                f"{self.title} Subtitle"
-            )
+        # Debug logging
+        if self.download_url:
+            logger.warning(f"Original download_url: {self.download_url}")
+        else:
+            logger.warning("download_url is empty")
+
+        # Auto-shorten main download link
+        if self.download_url and not is_shortened(self.download_url):
+            logger.warning("Calling shorten_url for download_url")
+            self.download_url = shorten_url(self.download_url, self.title)
+            logger.warning(f"New download_url: {self.download_url}")
+        else:
+            logger.warning("Skipping shortening for download_url")
+
+        # Auto-shorten subtitle link
+        if self.subtitle_url and not is_shortened(self.subtitle_url):
+            logger.warning("Calling shorten_url for subtitle_url")
+            self.subtitle_url = shorten_url(self.subtitle_url, f"{self.title} Subtitle")
+            logger.warning(f"New subtitle_url: {self.subtitle_url}")
+        else:
+            logger.warning("Skipping shortening for subtitle_url")
+
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        # This assumes your post detail URL pattern is named 'post_detail'
-        # and expects 'category' and 'slug' kwargs.
-        # Ensure your urls.py matches this.
         return reverse('post_detail', kwargs={
             'category': self.category.slug,
             'slug': self.slug
@@ -143,10 +161,12 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
     @property
     def get_page_title(self):
         return self.seo_title if self.seo_title else self.title
-    
+
+
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
     name = models.CharField(max_length=100)
