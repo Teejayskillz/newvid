@@ -14,20 +14,21 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.conf import settings
 from django.views.static import serve
-from django.db.models import Q
+from django.db.models import Q, F
+from django.db.models.functions import Greatest
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 def home(request):
-    # Get all active homepage sections
     sections = HomepageSection.objects.filter(enabled=True)
     
-    # Prepare section data
     section_data = []
     for section in sections:
         posts = Post.objects.filter(
             category__in=section.categories.all(),
             is_published=True
-        ).order_by('-published_date', '-updated_date')[:6]  # published first, then updated
+        ).annotate(
+            sort_date=Greatest('published_date', 'updated_date')
+        ).order_by('-sort_date')[:6]  # newest published or updated first
         
         section_data.append({
             'title': section.title,
@@ -35,15 +36,15 @@ def home(request):
             'id': section.id
         })
     
-    # Get all other recent posts not in sections
     section_categories = [cat for section in sections for cat in section.categories.all()]
     other_posts_queryset = Post.objects.filter(
         is_published=True
     ).exclude(
         category__in=section_categories
-    ).order_by('-published_date', '-updated_date')
+    ).annotate(
+        sort_date=Greatest('published_date', 'updated_date')
+    ).order_by('-sort_date')
     
-    # Handle search functionality
     query = request.GET.get('q')
     if query:
         other_posts_queryset = other_posts_queryset.filter(
@@ -53,7 +54,6 @@ def home(request):
             Q(tags__name__icontains=query)
         ).distinct()
     
-    # Pagination
     paginator = Paginator(other_posts_queryset, 15)
     page_number = request.GET.get('page', 1)
     try:
