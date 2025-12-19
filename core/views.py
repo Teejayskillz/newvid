@@ -14,8 +14,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 from django.conf import settings
 from django.views.static import serve
-from django.db.models import Q, F
-from django.db.models.functions import Greatest
+from django.db.models import Case, When, Value, IntegerField, F, Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 def home(request):
@@ -27,8 +26,13 @@ def home(request):
             category__in=section.categories.all(),
             is_published=True
         ).annotate(
-            sort_date=Greatest('published_date', 'updated_date')
-        ).order_by('-sort_date')[:6]  # newest published or updated first
+            # If updated_date > published_date, assign 1 to move it up
+            updated_priority=Case(
+                When(updated_date__gt=F('published_date'), then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField()
+            )
+        ).order_by('-updated_priority', '-published_date', '-updated_date')[:6]
         
         section_data.append({
             'title': section.title,
@@ -42,8 +46,12 @@ def home(request):
     ).exclude(
         category__in=section_categories
     ).annotate(
-        sort_date=Greatest('published_date', 'updated_date')
-    ).order_by('-sort_date')
+        updated_priority=Case(
+            When(updated_date__gt=F('published_date'), then=Value(1)),
+            default=Value(0),
+            output_field=IntegerField()
+        )
+    ).order_by('-updated_priority', '-published_date', '-updated_date')
     
     query = request.GET.get('q')
     if query:
