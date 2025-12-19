@@ -119,9 +119,15 @@ class Post(models.Model):
     is_published = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
-        from .utils import shorten_url  # Safe import here
+        from .utils import shorten_url
+        from urllib.parse import urlparse
 
         SHORT_DOMAIN = "dl.jaraflix.com"
+
+        # Ensure slug is set
+        if not self.slug:
+            from django.utils.text import slugify
+            self.slug = slugify(self.title)
 
         def is_shortened(url):
             try:
@@ -129,27 +135,13 @@ class Post(models.Model):
             except:
                 return False
 
-        # Debug logging
-        if self.download_url:
-            logger.warning(f"Original download_url: {self.download_url}")
-        else:
-            logger.warning("download_url is empty")
-
-        # Auto-shorten main download link
+        # Shorten main download link
         if self.download_url and not is_shortened(self.download_url):
-            logger.warning("Calling shorten_url for download_url")
             self.download_url = shorten_url(self.download_url, self.title)
-            logger.warning(f"New download_url: {self.download_url}")
-        else:
-            logger.warning("Skipping shortening for download_url")
 
-        # Auto-shorten subtitle link
+        # Shorten subtitle link
         if self.subtitle_url and not is_shortened(self.subtitle_url):
-            logger.warning("Calling shorten_url for subtitle_url")
             self.subtitle_url = shorten_url(self.subtitle_url, f"{self.title} Subtitle")
-            logger.warning(f"New subtitle_url: {self.subtitle_url}")
-        else:
-            logger.warning("Skipping shortening for subtitle_url")
 
         super().save(*args, **kwargs)
 
