@@ -27,7 +27,7 @@ def home(request):
         posts = Post.objects.filter(
             is_published=True,
             category__in=section.categories.all()
-        ).order_by('-updated_date')[:6]   # ✅ THIS IS THE KEY
+        ).order_by('-updated_date')[:6]
 
         section_data.append({
             'title': section.title,
@@ -35,15 +35,10 @@ def home(request):
             'id': section.id
         })
 
-    section_categories = [
-        cat for section in sections for cat in section.categories.all()
-    ]
-
+    # ✅ DO NOT EXCLUDE SECTION POSTS
     other_posts_queryset = Post.objects.filter(
         is_published=True
-    ).exclude(
-        category__in=section_categories
-    ).order_by('-updated_date')  # ✅ UPDATED POSTS ALWAYS FIRST
+    ).order_by('-updated_date')
 
     query = request.GET.get('q')
     if query:
