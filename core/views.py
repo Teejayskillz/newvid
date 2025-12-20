@@ -16,69 +16,61 @@ from django.conf import settings
 from django.views.static import serve
 from django.db.models import Case, When, Value, IntegerField, F, Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 def home(request):
     sections = HomepageSection.objects.filter(enabled=True)
-    
+
     section_data = []
     for section in sections:
         posts = Post.objects.filter(
-            category__in=section.categories.all(),
-            is_published=True
-        ).annotate(
-            # If updated_date > published_date, assign 1 to move it up
-            updated_priority=Case(
-                When(updated_date__gt=F('published_date'), then=Value(1)),
-                default=Value(0),
-                output_field=IntegerField()
-            )
-        ).order_by('-updated_priority', '-published_date', '-updated_date')[:6]
-        
+            is_published=True,
+            category__in=section.categories.all()
+        ).order_by('-updated_date')[:6]   # ✅ THIS IS THE KEY
+
         section_data.append({
             'title': section.title,
             'posts': posts,
             'id': section.id
         })
-    
-    section_categories = [cat for section in sections for cat in section.categories.all()]
+
+    section_categories = [
+        cat for section in sections for cat in section.categories.all()
+    ]
+
     other_posts_queryset = Post.objects.filter(
         is_published=True
     ).exclude(
         category__in=section_categories
-    ).annotate(
-        updated_priority=Case(
-            When(updated_date__gt=F('published_date'), then=Value(1)),
-            default=Value(0),
-            output_field=IntegerField()
-        )
-    ).order_by('-updated_priority', '-published_date', '-updated_date')
-    
+    ).order_by('-updated_date')  # ✅ UPDATED POSTS ALWAYS FIRST
+
     query = request.GET.get('q')
     if query:
         other_posts_queryset = other_posts_queryset.filter(
-            Q(title__icontains=query) | 
+            Q(title__icontains=query) |
             Q(content__icontains=query) |
             Q(category__name__icontains=query) |
             Q(tags__name__icontains=query)
         ).distinct()
-    
+
     paginator = Paginator(other_posts_queryset, 15)
     page_number = request.GET.get('page', 1)
+
     try:
         page_obj = paginator.page(page_number)
     except PageNotAnInteger:
         page_obj = paginator.page(1)
     except EmptyPage:
         page_obj = paginator.page(paginator.num_pages)
-    
-    context = {
+
+    return render(request, 'core/home.html', {
         'sections': section_data,
         'page_obj': page_obj,
         'query': query,
         'total_posts': paginator.count,
-    }
-    
-    return render(request, 'core/home.html', context)
+    })
+
 
 class CategoryView(ListView):
     model = Post
